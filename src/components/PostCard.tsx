@@ -1,10 +1,12 @@
 import React from "react";
-
-function PostCard() {
+type Props = {
+  post: Post;
+};
+function PostCard(props: Props) {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-md">
-      <h2 className="text-2xl">Title</h2>
-      <p className="mt-3">Description</p>
+      <h2 className="text-2xl">{props.post.title}</h2>
+      <p className="mt-3">{props.post.body}</p>
     </div>
   );
 }
