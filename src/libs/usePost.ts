@@ -12,7 +12,7 @@ export const usePost = () => {
       .get<Post[]>("https://jsonplaceholder.typicode.com/posts")
       .then((res) => {
         setPosts(res.data);
-        setStatus(Status.NONE);
+        setStatus(Status.SUCCESS);
       })
       .catch(() => {
         setStatus(Status.ERROR);
