@@ -1,11 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import PostFieldCard from "../components/PostFieldCard";
+import PostFieldCard, { PostForm } from "../components/PostFieldCard";
 import PostCard, { PostCardLoading } from "../components/PostCard";
 import axios from "axios";
+import { Alert, AlertColor, Snackbar } from "@mui/material";
 
 function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [state, setFetch] = useState<"loading" | "error" | "none">("none");
+  const [postStatus, setPostStatus] = useState<
+    "loading" | "error" | "none" | "success"
+  >("none");
   const getData = useCallback(() => {
     setFetch("loading");
     axios
@@ -19,13 +23,50 @@ function Home() {
       });
   }, []);
 
+  const getServerity = (status: typeof postStatus): AlertColor => {
+    switch (status) {
+      case "error":
+        return "error";
+      case "success":
+        return "success";
+      default:
+        return "info";
+    }
+  };
+
+  const getAlertMessage = (status: typeof postStatus): string => {
+    switch (status) {
+      case "error":
+        return "Post Failed";
+      case "success":
+        return "Posted";
+      case "loading":
+        return "Posting";
+      default:
+        return "";
+    }
+  };
+
   useEffect(() => {
     getData();
   }, [getData]);
 
+  const submitPost = (data: PostForm) => {
+    const body = { ...data, userId: 2 };
+    setPostStatus("loading");
+    axios
+      .post<Post>("https://jsonplaceholder.typicode.com/posts", body)
+      .then(() => {
+        setPostStatus("success");
+      })
+      .catch(() => {
+        setPostStatus("error");
+      });
+  };
+
   return (
     <div className="flex flex-col gap-4">
-      <PostFieldCard />
+      <PostFieldCard submit={submitPost} />
       {posts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
@@ -48,6 +89,20 @@ function Home() {
             try again
           </span>
         </div>
+      ) : null}
+      {postStatus !== "none" ? (
+        <Snackbar
+          open={true}
+          autoHideDuration={3000}
+          onClose={() => {
+            setPostStatus("none");
+          }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert severity={getServerity(postStatus)}>
+            {getAlertMessage(postStatus)}
+          </Alert>
+        </Snackbar>
       ) : null}
     </div>
   );
