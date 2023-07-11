@@ -11,6 +11,7 @@ function Home() {
   const { posts, reload, status } = usePost();
   const { submitPost, status: submitStatus } = useCreatePost(() => {
     formRef.current?.reset();
+    reload();
   });
 
   return (

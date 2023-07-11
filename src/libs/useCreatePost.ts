@@ -3,7 +3,7 @@ import { useState } from "react";
 import { PostForm } from "../components/PostFieldCard";
 import { Status } from "../types/Status";
 
-export const useCreatePost = (reset: () => void) => {
+export const useCreatePost = (submited: () => void) => {
   const [status, setStatus] = useState<Status>(Status.NONE);
 
   const submitPost = (data: PostForm) => {
@@ -13,11 +13,11 @@ export const useCreatePost = (reset: () => void) => {
       .post<Post>("https://jsonplaceholder.typicode.com/posts", body)
       .then(() => {
         setStatus(Status.SUCCESS);
-        reset();
+        submited();
       })
       .catch(() => {
         setStatus(Status.ERROR);
-        reset();
+        submited();
       });
   };
 
