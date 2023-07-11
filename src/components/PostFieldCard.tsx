@@ -1,4 +1,10 @@
-import React, { FormEvent, SyntheticEvent, useState } from "react";
+import React, {
+  FormEvent,
+  SyntheticEvent,
+  forwardRef,
+  useImperativeHandle,
+  useState,
+} from "react";
 
 export type PostForm = {
   title: string;
@@ -9,7 +15,10 @@ type Props = {
   submit: (data: PostForm) => void;
 };
 
-function PostFieldCard(props: Props) {
+export type FormRef = {
+  reset: () => void;
+};
+const PostFieldCard = forwardRef<FormRef, Props>((props, ref) => {
   const [formData, setFormData] = useState<PostForm>({
     title: "",
     message: "",
@@ -24,6 +33,12 @@ function PostFieldCard(props: Props) {
       [name]: value,
     }));
   };
+
+  useImperativeHandle(ref, () => ({
+    reset() {
+      setFormData({ title: "", message: "" });
+    },
+  }));
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -62,6 +77,6 @@ function PostFieldCard(props: Props) {
       </form>
     </div>
   );
-}
+});
 
 export default PostFieldCard;

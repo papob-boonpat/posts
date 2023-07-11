@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import PostFieldCard, { PostForm } from "../components/PostFieldCard";
+import PostFieldCard, { FormRef, PostForm } from "../components/PostFieldCard";
 import PostCard, { PostCardLoading } from "../components/PostCard";
 import axios from "axios";
 import { Alert, AlertColor, Snackbar } from "@mui/material";
@@ -10,6 +10,9 @@ function Home() {
   const [postStatus, setPostStatus] = useState<
     "loading" | "error" | "none" | "success"
   >("none");
+
+  const formRef = useRef<FormRef>(null);
+
   const getData = useCallback(() => {
     setFetch("loading");
     axios
@@ -58,15 +61,17 @@ function Home() {
       .post<Post>("https://jsonplaceholder.typicode.com/posts", body)
       .then(() => {
         setPostStatus("success");
+        formRef.current?.reset();
       })
       .catch(() => {
         setPostStatus("error");
+        formRef.current?.reset();
       });
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <PostFieldCard submit={submitPost} />
+      <PostFieldCard submit={submitPost} ref={formRef} />
       {posts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
